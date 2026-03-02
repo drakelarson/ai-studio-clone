@@ -316,18 +316,19 @@ export default function Home() {
             {(view === 'edit' || view === 'split') && (
               <div className={`${view === 'split' ? 'w-1/2' : 'w-full'} overflow-hidden`}>
                 <CodeEditor 
-                  files={files}
-                  activeFile={activeFile}
-                  onFileChange={(filename, content) => {
-                    setFiles(prev => ({ ...prev, [filename]: content }))
+                  code={files[activeFile] || ''}
+                  filename={activeFile}
+                  onChange={(content) => {
+                    setFiles(prev => ({ ...prev, [activeFile]: content }))
                   }}
+                  readOnly={false}
                 />
               </div>
             )}
             
             {(view === 'preview' || view === 'split') && (
               <div className={`${view === 'split' ? 'w-1/2 border-l border-dark-600' : 'w-full'} overflow-hidden`}>
-                <Preview files={files} />
+                <Preview files={files} projectName={projectName} />
               </div>
             )}
           </div>

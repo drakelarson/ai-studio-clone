@@ -5,10 +5,10 @@ import { RefreshCw, ExternalLink, Smartphone, Monitor, Tablet } from 'lucide-rea
 
 type Props = {
   files: { [filename: string]: string }
-  projectName: string
+  projectName?: string
 }
 
-export default function Preview({ files, projectName }: Props) {
+export default function Preview({ files, projectName = 'Preview' }: Props) {
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
   const [key, setKey] = useState(0)
   const iframeRef = useRef<HTMLIFrameElement>(null)

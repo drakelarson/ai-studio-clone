@@ -1,16 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import Prism from 'prismjs'
-import 'prismjs/components/prism-typescript'
-import 'prismjs/components/prism-tsx'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-jsx'
-import 'prismjs/components/prism-css'
-import 'prismjs/components/prism-json'
-import 'prismjs/components/prism-bash'
-import 'prismjs/components/prism-python'
-import 'prismjs/themes/prism-tomorrow.css'
+import { useEffect, useRef, useState } from 'react'
 
 type Props = {
   code: string
@@ -21,12 +11,7 @@ type Props = {
 
 export default function CodeEditor({ code, filename, onChange, readOnly = true }: Props) {
   const codeRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    if (codeRef.current) {
-      Prism.highlightElement(codeRef.current)
-    }
-  }, [code])
+  const [highlighted, setHighlighted] = useState('')
 
   const getLanguage = (filename: string): string => {
     const ext = filename.split('.').pop()?.toLowerCase()
@@ -43,6 +28,33 @@ export default function CodeEditor({ code, filename, onChange, readOnly = true }
     }
     return langMap[ext || ''] || 'typescript'
   }
+
+  useEffect(() => {
+    // Dynamic import of Prism only on client side
+    const loadPrism = async () => {
+      const Prism = await import('prismjs')
+      
+      // Load language components
+      await import('prismjs/components/prism-typescript')
+      await import('prismjs/components/prism-tsx')
+      await import('prismjs/components/prism-javascript')
+      await import('prismjs/components/prism-jsx')
+      await import('prismjs/components/prism-css')
+      await import('prismjs/components/prism-json')
+      await import('prismjs/components/prism-bash')
+      await import('prismjs/components/prism-python')
+      
+      const lang = getLanguage(filename)
+      const grammar = Prism.default.languages[lang] || Prism.default.languages.typescript
+      const highlighted = Prism.default.highlight(code, grammar, lang)
+      setHighlighted(highlighted)
+    }
+    
+    loadPrism().catch(() => {
+      // Fallback to plain text if Prism fails
+      setHighlighted(code)
+    })
+  }, [code, filename])
 
   return (
     <div className="h-full flex flex-col bg-dark-900">
@@ -67,9 +79,11 @@ export default function CodeEditor({ code, filename, onChange, readOnly = true }
           {/* Code content */}
           <div className="flex-1 py-4 pr-4">
             <pre className={`language-${getLanguage(filename)}`}>
-              <code ref={codeRef} className={`language-${getLanguage(filename)}`}>
-                {code}
-              </code>
+              <code 
+                ref={codeRef} 
+                className={`language-${getLanguage(filename)}`}
+                dangerouslySetInnerHTML={{ __html: highlighted || code }}
+              />
             </pre>
           </div>
         </div>

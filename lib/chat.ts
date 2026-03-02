@@ -1,5 +1,6 @@
 import { useAppStore } from '@/lib/store';
 import { useState, useCallback } from 'react';
+import type { Message } from '@/types';
 
 const API_URL = 'https://larsondrake.zo.space/api/chat';
 
@@ -42,7 +43,7 @@ export function useChat() {
         },
         body: JSON.stringify({
           messages: [
-            ...messages.map(m => ({ role: m.role, content: m.content })),
+            ...messages.map((m: Message) => ({ role: m.role, content: m.content })),
             { role: 'user', content },
           ],
           model,
@@ -77,11 +78,11 @@ export function useChat() {
     if (messages.length < 2) return;
 
     // Get the last user message
-    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+    const lastUserMessage = [...messages].reverse().find((m: Message) => m.role === 'user');
     if (!lastUserMessage) return;
 
     // Remove last assistant message and regenerate
-    const messageIndex = messages.findIndex(m => m.id === lastUserMessage.id);
+    const messageIndex = messages.findIndex((m: Message) => m.id === lastUserMessage.id);
     if (messageIndex === -1) return;
 
     // Reset and regenerate
@@ -95,7 +96,7 @@ export function useChat() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: messages.slice(0, messageIndex + 1).map(m => ({
+          messages: messages.slice(0, messageIndex + 1).map((m: Message) => ({
             role: m.role,
             content: m.content,
           })),

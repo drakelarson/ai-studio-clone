@@ -6,6 +6,7 @@ import { useAppStore } from '@/lib/store';
 import { classNames, formatDate, copyToClipboard } from '@/lib/utils';
 import { Send, RotateCcw, Copy, Check, Bot, User, Loader2, Paperclip, Mic } from 'lucide-react';
 import type { Message } from '@/types';
+import type { AppState } from '@/lib/store';
 
 function TypingIndicator() {
   return (
@@ -79,8 +80,8 @@ export function ChatInterface() {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const systemPrompt = useAppStore((s) => s.systemPrompt);
-  const setSystemPrompt = useAppStore((s) => s.setSystemPrompt);
+  const systemPrompt = useAppStore((s: AppState) => s.systemPrompt);
+  const setSystemPrompt = useAppStore((s: AppState) => s.setSystemPrompt);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -142,7 +143,7 @@ export function ChatInterface() {
           </div>
         ) : (
           <>
-            {messages.map((message) => (
+            {messages.map((message: Message) => (
               <MessageBubble
                 key={message.id}
                 message={message}

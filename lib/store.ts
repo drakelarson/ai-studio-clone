@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Message, RunSettings, Project } from '@/types';
 
-interface AppState {
+export interface AppState {
   // Current chat state
   messages: Message[];
   systemPrompt: string;
